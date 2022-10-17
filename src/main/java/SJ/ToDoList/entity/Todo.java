@@ -1,7 +1,5 @@
 package SJ.ToDoList.entity;
 
-import java.time.LocalDateTime;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -38,11 +36,11 @@ public class Todo{
 	private String status;
 	
 	@Setter
-	@Column(nullable = false)
-	private LocalDateTime regdate;
+	@Column(nullable = false)	
+	private String regdate;
 	
 	@Setter
 	@Column(nullable = false)
-	private String userId;
+	private Long userId;
 
 }

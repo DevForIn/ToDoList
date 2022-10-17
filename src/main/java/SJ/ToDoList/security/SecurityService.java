@@ -36,8 +36,8 @@ public class SecurityService {
 		byte[] secretKeyBytes = DatatypeConverter.parseBase64Binary(SECRET_KEY);
 		Key signingKey = new SecretKeySpec(secretKeyBytes, signatureAlgorithm.getJcaName());
 		
-		return Jwts.builder()
-				.setSubject(email)
+		return Jwts.builder()				
+				.setClaims(claims)
 				.signWith(signingKey,signatureAlgorithm)
 				.setExpiration(new Date(System.currentTimeMillis() + (60*2000*60)))
 				.compact();
@@ -46,10 +46,10 @@ public class SecurityService {
     /**
      * 토큰 유효여부 확인
      */
-    public Boolean isValidToken(String token, Member member) {
+    public Boolean isValidToken(String token, String email) {
         log.info("isValidToken token = {}", token);
         String userEmail = getEmailFromToken(token);
-        return (userEmail.equals(member.getEmail()) && !isTokenExpired(token));
+        return (userEmail.equals(email)) && !isTokenExpired(token);
     }
 
     /**
@@ -68,8 +68,8 @@ public class SecurityService {
      * Claim 에서 email 가져오기
      */
     public String getEmailFromToken(String token) {
-        String userEmail = String.valueOf(getAllClaims(token).getSubject());
-        log.info("getUsernameFormToken subject = {}", userEmail);
+        String userEmail = String.valueOf(getAllClaims(token).get("email"));
+        log.info("getEmailFromToken Email = {}", userEmail);
         return userEmail;
     }
 
@@ -86,9 +86,7 @@ public class SecurityService {
      */
     private boolean isTokenExpired(String token) {
         return getExpirationDate(token).before(new Date());
-    }    
- 
-	
+    }	
 	
 	// 토큰 검증 메서드를 boolean
 	public String getSubject(String token) {
@@ -98,6 +96,5 @@ public class SecurityService {
 							.parseClaimsJws(token)
 							.getBody();
 		return claims.getSubject();
-	}
-	
+	}	
 }
