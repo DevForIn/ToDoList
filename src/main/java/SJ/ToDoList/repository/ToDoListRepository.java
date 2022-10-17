@@ -7,12 +7,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import SJ.ToDoList.entity.Member;
-import SJ.ToDoList.entity.ToDoList;
+import SJ.ToDoList.entity.Todo;
 
 @Repository
-public interface ToDoListRepository extends JpaRepository<ToDoList, Long>{
+public interface ToDoListRepository extends JpaRepository<Todo, Long>{
 
-	List<ToDoList> findAllById(Long id);
+	List<Todo> findAllById(Long id);
 
 
 }

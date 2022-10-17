@@ -10,12 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import SJ.ToDoList.entity.Member;
-import SJ.ToDoList.entity.ToDoList;
+import SJ.ToDoList.entity.Todo;
 import SJ.ToDoList.security.SecurityService;
 import SJ.ToDoList.service.MemberService;
 
@@ -33,10 +34,10 @@ public class ToDoController {
 	}
 	
 	@GetMapping("/list/{id}")
-	public ResponseEntity<List> toDoList(@RequestParam(value = "id") Long id ,@RequestParam(value="token") String token){
+	public ResponseEntity<List> toDoList(@RequestParam(value = "id") Long id ,@RequestHeader(value="token") String token){
 		Optional<Member> member = memberService.findById(id);
-		String email = securityService.getSubject(token);
-		List<ToDoList> list = new ArrayList<>();		
+		String email = securityService.getEmailFromToken(token);
+		List<Todo> list = new ArrayList<>();		
 		
 		if(member.isEmpty()) {			
 			return new ResponseEntity<>(list,HttpStatus.BAD_REQUEST);

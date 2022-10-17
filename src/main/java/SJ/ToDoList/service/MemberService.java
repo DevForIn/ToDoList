@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import SJ.ToDoList.entity.Member;
-import SJ.ToDoList.entity.ToDoList;
+import SJ.ToDoList.entity.Todo;
 import SJ.ToDoList.repository.MemberRepository;
 import SJ.ToDoList.repository.ToDoListRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +39,7 @@ public class MemberService {
 		return memberRepository.findByEmail(email);		
 	}
 
-	public List<ToDoList> findByList(Long id) {
+	public List<Todo> findByList(Long id) {
 		return toDoListRepository.findAllById(id);
 	}
 

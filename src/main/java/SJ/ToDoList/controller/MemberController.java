@@ -34,9 +34,9 @@ public class MemberController {
 	// 회원가입 API
 	@PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody Member member) {
-		Optional<Member> findMember = memberService.findById(member.getId());
+		Optional<Member> findMember = memberService.findByEmail(member.getEmail());
 		if(!findMember.isEmpty()) {	
-			return new ResponseEntity<>("회원가입 실패",HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("회원가입 실패-아이디 중복",HttpStatus.BAD_REQUEST);
 		}
 		else {			
 			memberService.save(member);
@@ -50,16 +50,17 @@ public class MemberController {
 		Optional<Member> loginMember = memberService.findByEmail(loginVo.getEmail());
 		Map<String,Object> map = new LinkedHashMap<>();
 		if(loginMember.isEmpty()) {
-			map.put("로그인 실패 -> ", "계정 없음");
+			map.put("로그인 실패 -> ", "[계정 없음]");
 			return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
 		}
 		if(!loginVo.getPassword().equals(loginMember.get().getPassword())){
-			map.put("로그인 실패 -> ", "[email or password 불일치]");
+			map.put("로그인 실패 -> ", "[password 불일치]");
 			return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
 		} else {
-			String token = securityService.createToken(loginMember.get().getEmail(), (60*2000*60));
-			map.put("result", token);
+			
+			String token = securityService.generateToken(loginMember.get().getEmail());
+			map.put("token", token);
 			return new ResponseEntity<>(map,HttpStatus.OK);
 		}
-	}	
+	}
 }

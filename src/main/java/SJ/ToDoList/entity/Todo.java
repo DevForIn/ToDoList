@@ -1,5 +1,7 @@
 package SJ.ToDoList.entity;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,8 +18,8 @@ import lombok.Setter;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "ToDoList")
-public class ToDoList{
+@Table(name = "Todo")
+public class Todo{
 	
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="ID")
@@ -33,10 +35,14 @@ public class ToDoList{
 	
 	@Setter
 	@Column(nullable = false)
-	private String name;
+	private String status;
 	
 	@Setter
 	@Column(nullable = false)
-	private String memberEmail;
+	private LocalDateTime regdate;
+	
+	@Setter
+	@Column(nullable = false)
+	private String userId;
 
 }
