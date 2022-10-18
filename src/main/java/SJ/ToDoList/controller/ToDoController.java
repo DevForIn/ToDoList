@@ -3,6 +3,7 @@ package SJ.ToDoList.controller;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,46 +41,69 @@ public class ToDoController {
 		this.todoService = todoService;
 	}
 	
+	// 로그인 user의 toDo list get
 	@GetMapping("/list/{id}")
-	public ResponseEntity<List> toDoList(@PathVariable(value = "id") Long id, @RequestHeader(value="token") String token,@RequestBody LoginVO loginVo){
-		Optional<Member> member = memberService.findById(id);		
-		String email = securityService.getEmailFromToken(token);
-		List<Todo> list = new ArrayList<>();	
-		if(member.isEmpty()) {			
-			return new ResponseEntity<>(list,HttpStatus.BAD_REQUEST);
-		}
-		if(!member.get().getEmail().equals(email)) {						
-			return new ResponseEntity<>(list,HttpStatus.BAD_REQUEST);
-		}		
-		list = todoService.findByUserIdAndRegdate(member.get().getId(),loginVo.getRegdate());
-		return new ResponseEntity<>(list,HttpStatus.OK);
+	public ResponseEntity<?> toDoList(@PathVariable(value = "id") Long id, @RequestHeader(value="token") String token){				
+		Optional<Member> member = memberService.findById(id);	
+		Map<String,Object> map = new HashMap<>();		
 		
+		if(member.isEmpty()) {
+			map.put("message","로그인 정보 없음");
+			return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
+		}		
+		securityService.isValidToken(token, member.get().getEmail());		
+		List<Todo> list = todoService.findByUserId(id);			
+		return new ResponseEntity<>(list,HttpStatus.OK);		
 	}
 	
+	// 로그인 user의 toDo list 중 선택한 게시글 get
+	@GetMapping("/list/{id}/{todoid}")
+	public ResponseEntity<?> toDoOne(@PathVariable(value = "id") Long id, @PathVariable(value = "todoid") Long todoid, @RequestHeader(value="token") String token){				
+		Optional<Member> member = memberService.findById(id);	
+		Optional<Todo> todo = todoService.findById(todoid);
+		
+		String email = securityService.getEmailFromToken(token);		
+		Map<String,Object> map = new HashMap<>();		
+		
+		if(member.isEmpty() || todo.isEmpty()) {
+			map.put("message","로그인 및 ToDo 정보 없음");
+			return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
+		}
+		if(!member.get().getEmail().equals(email)) {						
+			return new ResponseEntity<>("로그인 정보 불일치",HttpStatus.BAD_REQUEST);
+		}
+		Todo todoGet = todoService.findByIdAndUserId(todoid,id);		
+		return new ResponseEntity<>(todoGet,HttpStatus.OK);		
+	}
+	
+	// todo 저장
 	@PostMapping("/list/{id}")
 	public ResponseEntity<?> createList(@PathVariable(value = "id") Long id,@RequestBody Todo todo,@RequestHeader(value="token") String token){
 		Optional<Member> member = memberService.findById(id);
-		String email = securityService.getEmailFromToken(token);
+		String email = securityService.getEmailFromToken(token);		
 		if(member.isEmpty()) {			
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("로그인 정보 없음",HttpStatus.BAD_REQUEST);
 		}
-		if(!member.get().getEmail().equals(email)) {						
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		if(!member.get().getEmail().equals(email)) {			
+			return new ResponseEntity<>("로그인 정보 불일치",HttpStatus.BAD_REQUEST);
 		}		
-		todoService.saveList(todo);
-		return new ResponseEntity<>(HttpStatus.OK);
+		todoService.save(todo);
+		return new ResponseEntity<>("저장완료",HttpStatus.OK);
 	}
 	
-	@DeleteMapping("/list/{id}")
-	public ResponseEntity<?> deleteList(@PathVariable(value="id") Long id,@RequestBody Todo todo,@RequestHeader(value="token") String token){
+	// todo 삭제
+	@DeleteMapping("/list/{id}/{todoid}")
+	public ResponseEntity<?> deleteList(@PathVariable(value="id") Long id,@PathVariable(value="todoid") Long todoid,@RequestHeader(value="token") String token){
 		Optional<Member> member = memberService.findById(id);
 		String email = securityService.getEmailFromToken(token);
 		if(member.isEmpty()) {			
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("로그인 정보 없음",HttpStatus.BAD_REQUEST);
 		}
 		if(!member.get().getEmail().equals(email)) {						
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("로그인 정보 불일치",HttpStatus.BAD_REQUEST);
 		}
-		return null;
+		
+		todoService.deleteById(todoid);
+		return new ResponseEntity<>("삭제완료",HttpStatus.OK);
 	}
 }

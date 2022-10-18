@@ -10,9 +10,9 @@ import SJ.ToDoList.entity.Todo;
 @Repository
 public interface ToDoListRepository extends JpaRepository<Todo, Long>{
 	
-	@SuppressWarnings("unchecked")
-	Todo save(Todo todo);
-
 	List<Todo> findByUserIdAndRegdate(Long id, String regdate);
-	
+
+	List<Todo> findByUserId(Long id);
+
+	Todo findByIdAndUserId(Long todoid, Long id);
 }
