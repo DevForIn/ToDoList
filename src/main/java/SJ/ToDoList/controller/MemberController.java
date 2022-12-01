@@ -21,8 +21,7 @@ import SJ.ToDoList.service.MemberService;
 @RequestMapping("ToDo")
 public class MemberController {	
 	
-	private final MemberService memberService;
-	
+	private final MemberService memberService;	
 	private final SecurityService securityService;
 	
 	@Autowired
@@ -46,7 +45,7 @@ public class MemberController {
 	
 	// 로그인
 	@PostMapping("/login")	
-	public ResponseEntity<Map> loginMember(@RequestBody LoginVO loginVo){
+	public ResponseEntity<?> loginMember(@RequestBody LoginVO loginVo){
 		Optional<Member> loginMember = memberService.findByEmail(loginVo.getEmail());
 		Map<String,Object> map = new LinkedHashMap<>();
 		if(loginMember.isEmpty()) {

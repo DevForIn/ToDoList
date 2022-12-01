@@ -8,7 +8,6 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.springframework.stereotype.Service;
 
-import SJ.ToDoList.entity.Member;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -20,15 +19,18 @@ public class SecurityService {
 	
 	private static final String SECRET_KEY = "adgkamsdhgklasjgasdglkajklsdgklasdklgasklglaskdgkljaskldglalsdkg";
 	
-	
-	// 로그인 서비스 요청 
+	/**
+	 *  로그인 서비스 요청 
+	 */
 	 public String generateToken(String email) {
         Claims claims = Jwts.claims();
         claims.put("email", email);
         return createToken(claims, email); // email을 subject로 해서 token 생성
 	 }	
 	 
-	// token 생성
+	/**
+	 *  token 생성
+	 */
 	public String createToken(Claims claims, String email) {
 		
 		SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
@@ -88,7 +90,9 @@ public class SecurityService {
         return getExpirationDate(token).before(new Date());
     }	
 	
-	// 토큰 검증 메서드를 boolean
+	/**
+	 *  토큰 검증 메서드를 boolean
+	 */
 	public String getSubject(String token) {
 		Claims claims = Jwts.parserBuilder()
 							.setSigningKey(DatatypeConverter.parseBase64Binary(SECRET_KEY))
