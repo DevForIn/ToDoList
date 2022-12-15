@@ -9,7 +9,6 @@ public class MainController {
 	// 메인
 	@GetMapping("/")
 	public String mainPage() {
-		return "test";
+		return "test.html";
 	}
-	
 }

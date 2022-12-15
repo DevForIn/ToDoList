@@ -1,0 +1,7 @@
+[main 5609d4a] 'Member
+ 6 files changed, 58 insertions(+), 43 deletions(-)
+ create mode 100644 src/main/java/SJ/ToDoList/controller/MainController.java
+ rename src/main/java/SJ/ToDoList/controller/{MemberController.java => UserController.java} (75%)
+ rename src/main/java/SJ/ToDoList/entity/{Member.java => User.java} (93%)
+ rename src/main/java/SJ/ToDoList/repository/{MemberRepository.java => UserRepository.java} (51%)
+ rename src/main/java/SJ/ToDoList/service/{MemberService.java => UserService.java} (57%)
