@@ -17,23 +17,23 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import SJ.ToDoList.entity.Member;
+import SJ.ToDoList.entity.User;
 import SJ.ToDoList.entity.Todo;
 import SJ.ToDoList.security.SecurityService;
-import SJ.ToDoList.service.MemberService;
+import SJ.ToDoList.service.UserService;
 import SJ.ToDoList.service.TodoService;
 
 @RestController
 @RequestMapping("ToDo")
 public class ToDoController {	
 	
-	private final MemberService memberService;
+	private final UserService userService;
 	private final TodoService todoService;
 	private final SecurityService securityService;
 	
 	@Autowired
-	public ToDoController(MemberService memberService,TodoService todoService, SecurityService securityService) {
-		this.memberService = memberService;
+	public ToDoController(UserService userService,TodoService todoService, SecurityService securityService) {
+		this.userService = userService;
 		this.securityService = securityService;
 		this.todoService = todoService;
 	}
@@ -41,14 +41,14 @@ public class ToDoController {
 	// 로그인 user의 toDo list get
 	@GetMapping("/list/{id}")
 	public ResponseEntity<?> toDoList(@PathVariable(value = "id") Long id, @RequestHeader(value="token") String token){				
-		Optional<Member> member = memberService.findById(id);	
+		Optional<User> user = userService.findById(id);	
 		Map<String,Object> map = new HashMap<>();		
 		String email = securityService.getEmailFromToken(token);
-		if(member.isEmpty()) {
+		if(user.isEmpty()) {
 			map.put("message","로그인 정보 없음");
 			return new ResponseEntity<>(map,HttpStatus.valueOf(404));
 		}		
-		if(!member.get().getEmail().equals(email)) {						
+		if(!user.get().getEmail().equals(email)) {						
 			return new ResponseEntity<>("로그인 정보 불일치",HttpStatus.valueOf(404));
 		}	
 		List<Todo> list = todoService.findByUserId(id);			
@@ -58,17 +58,17 @@ public class ToDoController {
 	// 로그인 user의 toDo list 중 선택한 게시글 get
 	@GetMapping("/list/{id}/{todoid}")
 	public ResponseEntity<?> toDoOne(@PathVariable(value = "id") Long id, @PathVariable(value = "todoid") Long todoid, @RequestHeader(value="token") String token){				
-		Optional<Member> member = memberService.findById(id);	
+		Optional<User> user = userService.findById(id);	
 		Optional<Todo> todo = todoService.findById(todoid);
 		
 		String email = securityService.getEmailFromToken(token);		
 		Map<String,Object> map = new HashMap<>();		
 		
-		if(member.isEmpty() || todo.isEmpty()) {
+		if(user.isEmpty() || todo.isEmpty()) {
 			map.put("message","로그인 및 ToDo 정보 없음");
 			return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
 		}
-		if(!member.get().getEmail().equals(email)) {						
+		if(!user.get().getEmail().equals(email)) {						
 			return new ResponseEntity<>("로그인 정보 불일치",HttpStatus.BAD_REQUEST);
 		}
 		Todo todoGet = todoService.findByIdAndUserId(todoid,id);		
@@ -78,12 +78,12 @@ public class ToDoController {
 	// todo 저장
 	@PostMapping("/list/{id}")
 	public ResponseEntity<?> createList(@PathVariable(value = "id") Long id, @RequestBody Todo todo, @RequestHeader(value="token") String token){
-		Optional<Member> member = memberService.findById(id);
+		Optional<User> user = userService.findById(id);
 		String email = securityService.getEmailFromToken(token);		
-		if(member.isEmpty()) {			
+		if(user.isEmpty()) {			
 			return new ResponseEntity<>("로그인 정보 없음",HttpStatus.valueOf(404));
 		}
-		if(!member.get().getEmail().equals(email)) {			
+		if(!user.get().getEmail().equals(email)) {			
 			return new ResponseEntity<>("로그인 정보 불일치",HttpStatus.valueOf(404));
 		}		
 		todoService.save(todo);
@@ -93,12 +93,12 @@ public class ToDoController {
 	// todo 삭제
 	@DeleteMapping("/list/{id}/{todoid}")
 	public ResponseEntity<?> deleteList(@PathVariable(value="id") Long id, @PathVariable(value="todoid") Long todoid, @RequestHeader(value="token") String token){
-		Optional<Member> member = memberService.findById(id);
+		Optional<User> user = userService.findById(id);
 		String email = securityService.getEmailFromToken(token);
-		if(member.isEmpty()) {			
+		if(user.isEmpty()) {			
 			return new ResponseEntity<>("로그인 정보 없음",HttpStatus.valueOf(404));
 		}
-		if(!member.get().getEmail().equals(email)) {						
+		if(!user.get().getEmail().equals(email)) {						
 			return new ResponseEntity<>("로그인 정보 불일치",HttpStatus.valueOf(404));
 		}
 		

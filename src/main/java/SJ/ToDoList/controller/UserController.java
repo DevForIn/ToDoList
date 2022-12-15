@@ -13,32 +13,32 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import SJ.ToDoList.entity.LoginVO;
-import SJ.ToDoList.entity.Member;
+import SJ.ToDoList.entity.User;
 import SJ.ToDoList.security.SecurityService;
-import SJ.ToDoList.service.MemberService;
+import SJ.ToDoList.service.UserService;
 
 @RestController
 @RequestMapping("ToDo")
-public class MemberController {	
+public class UserController {	
 	
-	private final MemberService memberService;	
+	private final UserService userService;	
 	private final SecurityService securityService;
 	
 	@Autowired
-	public MemberController(MemberService memberService, SecurityService securityService) {
-		this.memberService = memberService;
+	public UserController(UserService userService, SecurityService securityService) {
+		this.userService = userService;
 		this.securityService = securityService;
 	}
-		
+	
 	// 회원가입 API
 	@PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody Member member) {
-		Optional<Member> findMember = memberService.findByEmail(member.getEmail());
+    public ResponseEntity<String> signup(@RequestBody User user) {
+		Optional<User> findMember = userService.findByEmail(user.getEmail());
 		if(!findMember.isEmpty()) {	
 			return new ResponseEntity<>("회원가입 실패-아이디 중복",HttpStatus.BAD_REQUEST);
 		}
 		else {			
-			memberService.save(member);
+			userService.save(user);
 			return new ResponseEntity<>("회원가입 완료",HttpStatus.OK);
 		}		
 	}
@@ -46,7 +46,7 @@ public class MemberController {
 	// 로그인
 	@PostMapping("/login")	
 	public ResponseEntity<?> loginMember(@RequestBody LoginVO loginVo){
-		Optional<Member> loginMember = memberService.findByEmail(loginVo.getEmail());
+		Optional<User> loginMember = userService.findByEmail(loginVo.getEmail());
 		Map<String,Object> map = new LinkedHashMap<>();
 		if(loginMember.isEmpty()) {
 			map.put("로그인 실패 -> ", "[계정 없음]");

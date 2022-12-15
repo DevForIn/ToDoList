@@ -5,16 +5,16 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import SJ.ToDoList.entity.Member;
+import SJ.ToDoList.entity.User;
 
 @Repository
-public interface MemberRepository extends JpaRepository<Member, Long>{
+public interface UserRepository extends JpaRepository<User, Long>{
 
 	@SuppressWarnings("unchecked")
-	Member save(Member member);
+	User save(User user);
 
-	Optional<Member> findById(Long id);
+	Optional<User> findById(Long id);
 	
-	Optional<Member> findByEmail(String email);
+	Optional<User> findByEmail(String email);
 
 }
