@@ -1,10 +1,15 @@
 package SJ.ToDoList.controller;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.websocket.server.PathParam;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,21 +50,33 @@ public class UserController {
 	
 	// 로그인
 	@PostMapping("/login")	
-	public ResponseEntity<?> loginMember(@RequestBody LoginVO loginVo){
-		Optional<User> loginMember = userService.findByEmail(loginVo.getEmail());
+	public ResponseEntity<?> loginMember(@PathParam(value = "email") String email, @PathParam(value = "password") String password) throws URISyntaxException{
+		System.out.println(email);
+		System.out.println(password);
+		Optional<User> loginUser = userService.findByEmail(email);
 		Map<String,Object> map = new LinkedHashMap<>();
-		if(loginMember.isEmpty()) {
+		if(loginUser.isEmpty()) {
 			map.put("로그인 실패 -> ", "[계정 없음]");
 			return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
 		}
-		if(!loginVo.getPassword().equals(loginMember.get().getPassword())){
+		if(!password.equals(loginUser.get().getPassword())){
 			map.put("로그인 실패 -> ", "[password 불일치]");
 			return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
 		} else {
 			
-			String token = securityService.generateToken(loginMember.get().getEmail());
+			// ResponseEntity -> URI로 이동한 경로 생성
+			// HttpHeaders 에 setLocation 으로 URI 경로 추가 
+			URI redirectUri = new URI("/test");
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.setLocation(redirectUri);
+			
+			String token = securityService.generateToken(loginUser.get().getEmail());
+			
 			map.put("token", token);
-			return new ResponseEntity<>(map,HttpStatus.OK);
+			map.put("loginUser", loginUser);
+			
+			
+			return new ResponseEntity<>(map,httpHeaders,HttpStatus.SEE_OTHER);
 		}
 	}
 }
