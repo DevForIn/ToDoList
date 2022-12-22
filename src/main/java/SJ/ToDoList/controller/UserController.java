@@ -7,9 +7,11 @@ import javax.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -30,16 +32,28 @@ public class UserController {
 		this.securityService = securityService;
 	}
 	
+	// 회원가입 GetMapping
+	@GetMapping("/signup")
+	public ModelAndView signUpmain() {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("/signup");
+		return mav;
+	}
+	
 	// 회원가입 API
 	@PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody User user) {
-		Optional<User> findMember = userService.findByEmail(user.getEmail());
+    public ModelAndView signup(@PathParam(value="email") String email, @PathParam(value="name") String name, @PathParam(value="password") String password) {
+		ModelAndView mav = new ModelAndView();
+		Optional<User> findMember = userService.findByEmail(email);
 		if(!findMember.isEmpty()) {	
-			return new ResponseEntity<>("회원가입 실패-아이디 중복",HttpStatus.BAD_REQUEST);
+			mav.addObject("nodab","회원가입 실패-아이디 중복");
+			return mav;
 		}
-		else {			
+		else {
+			User user = new User(null,email,name,password);
 			userService.save(user);
-			return new ResponseEntity<>("회원가입 완료",HttpStatus.OK);
+			mav.setViewName("/test");
+			return mav;
 		}		
 	}
 	
