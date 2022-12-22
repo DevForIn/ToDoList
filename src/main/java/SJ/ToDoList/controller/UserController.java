@@ -1,27 +1,18 @@
 package SJ.ToDoList.controller;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import SJ.ToDoList.entity.LoginVO;
 import SJ.ToDoList.entity.User;
 import SJ.ToDoList.security.SecurityService;
 import SJ.ToDoList.service.UserService;
@@ -54,7 +45,7 @@ public class UserController {
 	
 	// 로그인
 	@PostMapping("/login")	
-	public ModelAndView loginMember(@PathParam(value = "email") String email, @PathParam(value = "password") String password) throws URISyntaxException{
+	public ModelAndView loginMember(@PathParam(value = "email") String email, @PathParam(value = "password") String password){
 		ModelAndView mav = new ModelAndView();
 		System.out.println(email);
 		System.out.println(password);
