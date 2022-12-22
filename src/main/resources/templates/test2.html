@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
     <title>main</title>    
@@ -11,8 +11,15 @@
 	    <div>
 	    	<table>
 	    		<tr height="40px">
-					<td>TOKEN -> </td>
-					 <td>${token}</td>
+					<td>TOKEN -> <a th:text="${token}"/></td>
+					
+					<td th:text="${nodab}">! ! !</td>
+					
+				</tr>
+				<tr>
+					<td th:text="${loginUser.id}"> ! </td>
+					<td th:text="${loginUser.email}"> ! </td>
+					<td th:text="${loginUser.name}"> ! </td>
 				</tr>
 	    	</table>
 	    </div>

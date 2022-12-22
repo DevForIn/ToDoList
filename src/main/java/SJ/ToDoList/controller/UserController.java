@@ -12,10 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import SJ.ToDoList.entity.LoginVO;
 import SJ.ToDoList.entity.User;
@@ -50,33 +54,25 @@ public class UserController {
 	
 	// 로그인
 	@PostMapping("/login")	
-	public ResponseEntity<?> loginMember(@PathParam(value = "email") String email, @PathParam(value = "password") String password) throws URISyntaxException{
+	public ModelAndView loginMember(@PathParam(value = "email") String email, @PathParam(value = "password") String password) throws URISyntaxException{
+		ModelAndView mav = new ModelAndView();
 		System.out.println(email);
 		System.out.println(password);
 		Optional<User> loginUser = userService.findByEmail(email);
-		Map<String,Object> map = new LinkedHashMap<>();
+		mav.setViewName("/test2");
 		if(loginUser.isEmpty()) {
-			map.put("로그인 실패 -> ", "[계정 없음]");
-			return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
+			mav.addObject("nodab", "로그인 실패 : [계정 없음]");
+			return mav;
 		}
 		if(!password.equals(loginUser.get().getPassword())){
-			map.put("로그인 실패 -> ", "[password 불일치]");
-			return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
+			mav.addObject("nodab", "로그인 실패 : [password 불일치]");
+			return mav;
 		} else {
-			
-			// ResponseEntity -> URI로 이동한 경로 생성
-			// HttpHeaders 에 setLocation 으로 URI 경로 추가 
-			URI redirectUri = new URI("/test");
-			HttpHeaders httpHeaders = new HttpHeaders();
-			httpHeaders.setLocation(redirectUri);
-			
 			String token = securityService.generateToken(loginUser.get().getEmail());
-			
-			map.put("token", token);
-			map.put("loginUser", loginUser);
-			
-			
-			return new ResponseEntity<>(map,httpHeaders,HttpStatus.SEE_OTHER);
+			mav.addObject("token", token);
+			System.out.println(loginUser.get().toString());
+			mav.addObject("loginUser", loginUser.get());
+			return mav;
 		}
 	}
 }
