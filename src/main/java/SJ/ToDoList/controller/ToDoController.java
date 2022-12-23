@@ -47,11 +47,12 @@ public class ToDoController {
 	
 	// 로그인 user의 toDo list get
 	@GetMapping("/list/{id}")
-	public ModelAndView toDoList(@PathVariable(value = "id") Long id, @Param(value="token") AuthToken token){				
+	public ModelAndView toDoList(@PathVariable(value = "id") Long id, @Param(value="token") AuthToken token,@Param(value="loginUser") String loginUser){				
 		ModelAndView mav = new ModelAndView();
 		Optional<User> user = userService.findById(id);	
 		System.out.println("========> " + token.toString());
 		System.out.println("========> " + token.getToken());
+		System.out.println("========> " + loginUser);
 		
 		String email = securityService.getEmailFromToken(token.getToken());
 		mav.setViewName("/boardlist");
