@@ -5,19 +5,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.websocket.server.PathParam;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import SJ.ToDoList.entity.User;
+import SJ.ToDoList.entity.AuthToken;
 import SJ.ToDoList.entity.Todo;
 import SJ.ToDoList.security.SecurityService;
 import SJ.ToDoList.service.UserService;
@@ -40,19 +47,27 @@ public class ToDoController {
 	
 	// 로그인 user의 toDo list get
 	@GetMapping("/list/{id}")
-	public ResponseEntity<?> toDoList(@PathVariable(value = "id") Long id, @RequestHeader(value="token") String token){				
+	public ModelAndView toDoList(@PathVariable(value = "id") Long id, @Param(value="token") AuthToken token){				
+		ModelAndView mav = new ModelAndView();
 		Optional<User> user = userService.findById(id);	
-		Map<String,Object> map = new HashMap<>();		
-		String email = securityService.getEmailFromToken(token);
+		System.out.println("========> " + token.toString());
+		System.out.println("========> " + token.getToken());
+		
+		String email = securityService.getEmailFromToken(token.getToken());
+		mav.setViewName("/boardlist");
 		if(user.isEmpty()) {
-			map.put("message","로그인 정보 없음");
-			return new ResponseEntity<>(map,HttpStatus.valueOf(404));
+			mav.addObject("nodab", "게시글 조회 실패 : [로그인 정보 없음]");
+			return mav;
 		}		
 		if(!user.get().getEmail().equals(email)) {						
-			return new ResponseEntity<>("로그인 정보 불일치",HttpStatus.valueOf(404));
-		}	
-		List<Todo> list = todoService.findByUserId(id);			
-		return new ResponseEntity<>(list,HttpStatus.OK);		
+			mav.addObject("nodab", "게시글 조회 실패 : [로그인 정보 불일치]");
+			return mav;
+		}
+		
+		List<Todo> list = todoService.findByUserId(id);
+		mav.addObject("list", list);
+		mav.addObject("token",token.getToken());
+		return mav;
 	}
 	
 	// 로그인 user의 toDo list 중 선택한 게시글 get

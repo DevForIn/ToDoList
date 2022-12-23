@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ToDo List Page</title>
+</head>
+
+<style>
+    .layout {
+        width: 500px;
+        margin: 0 auto;
+        margin-top: 40px;
+    }
+</style>
+<body>
+	<div>
+		<h1>Login Success with Token !!</h1>
+	</div>
+
+    <div class="layout">
+    	<input type="hidden" name="token" value="${token}">
+        <table>
+            <thead>
+                <tr>
+                    <th>글번호</th>
+                    <th>제목</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each = "board:${list}">
+                    <td th:text="${board.id}">num</td>
+                    <td th:text="${board.title}">title</td>
+                    <td th:text="${board.regdate}">date</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
