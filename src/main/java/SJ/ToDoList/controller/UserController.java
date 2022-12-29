@@ -73,7 +73,6 @@ public class UserController {
 			String token1 = securityService.generateToken(loginUser.get().getEmail());
 			
 			AuthToken token = new AuthToken(token1);
-			mav.addObject("loginUser", loginUser.get().getName());
 			mav.addObject("token", token.getToken());
 			System.out.println(mav.getViewName());
 			
